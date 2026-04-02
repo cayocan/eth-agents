@@ -1,0 +1,31 @@
+{
+  "name": "eth-agents",
+  "version": "1.0.0",
+  "description": "Web3 multi-agent platform for Ethereum and EVM-compatible chains",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/bundle-mcp.mjs",
+    "test": "vitest run",
+    "validate": "node scripts/validate.mjs",
+    "prepublishOnly": "npm run build && npm run validate"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "files": [
+    "agents",
+    "skills",
+    "mcp/hud-server.cjs",
+    ".claude-plugin",
+    ".mcp.json",
+    "CLAUDE.md",
+    "README.md"
+  ],
+  "keywords": ["claude-code", "plugin", "web3", "ethereum", "solidity", "smart-contracts", "audit", "defi", "evm"],
+  "license": "MIT"
+}
