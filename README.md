@@ -79,13 +79,7 @@ Each agent has a **specific role**, **defined tools**, **output constraints**, a
 
 ## Install
 
-**Step 1** — add the marketplace (one-time):
-
-```bash
-claude plugin marketplace add cayocan/eth-agents
-```
-
-**Step 2** — install the plugin:
+install the plugin:
 
 ```bash
 claude plugin install eth-agents@eth-agents
