@@ -1,0 +1,15 @@
+{
+  "name": "eth-agents",
+  "owner": {
+    "name": "cayocan"
+  },
+  "plugins": [
+    {
+      "name": "eth-agents",
+      "source": "github:cayocan/eth-agents",
+      "description": "Web3 multi-agent platform — smart contract dev, audit, deploy & dApp on EVM chains",
+      "version": "1.0.0",
+      "author": "cayocan"
+    }
+  ]
+}
