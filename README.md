@@ -82,7 +82,7 @@ Each agent has a **specific role**, **defined tools**, **output constraints**, a
 **Step 1** — add the marketplace (one-time):
 
 ```bash
-claude plugin marketplace add github:cayocan/eth-agents
+claude plugin marketplace add cayocan/eth-agents
 ```
 
 **Step 2** — install the plugin:
