@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/bundle-mcp.mjs",
-    "test": "vitest run",
+    "test": "vitest run tests/",
     "validate": "node scripts/validate.mjs",
     "prepublishOnly": "npm run build && npm run validate"
   },

@@ -1,6 +1,7 @@
 example_project
 docs
 .claude
+.omc
 node_modules/
 dist/
 *.tsbuildinfo

@@ -132,16 +132,17 @@ Skills are the entry points — they activate coordinated agent pipelines. Invok
 
 Runs a systematic security audit. Depth is configurable from fast static analysis to full formal verification.
 
-| Flag | What runs | Time |
-|---|---|---|
-| `--static` *(default)* | Auditor only — pattern analysis + Slither/Mythril | Fast |
-| `--dynamic` | + Fork tests and Echidna fuzz campaigns | Medium |
-| `--formal` | + Certora Prover / Halmos formal verification | Slow |
-| `--full` | All three in sequence | Thorough |
+| Flag                   | What runs                                         | Time     |
+| ---------------------- | ------------------------------------------------- | -------- |
+| `--static` _(default)_ | Auditor only — pattern analysis + Slither/Mythril | Fast     |
+| `--dynamic`            | + Fork tests and Echidna fuzz campaigns           | Medium   |
+| `--formal`             | + Certora Prover / Halmos formal verification     | Slow     |
+| `--full`               | All three in sequence                             | Thorough |
 
 **Triggers:** "audit this contract" · "check for vulnerabilities" · "security review" · "find bugs in" · "is this contract safe"
 
 **Pipeline:**
+
 ```
 orchestrator → auditor (--static/dynamic/formal/full)
                      ↓ if --dynamic or --full
@@ -163,6 +164,7 @@ Enforces a strict TDD loop: tests are written before implementation, implementat
 **Triggers:** "write tests first" · "tdd" · "test-driven" · "write unit tests for" · "write failing tests"
 
 **Pipeline:**
+
 ```
 unit-test-engineer (writes failing tests)
         ↕  loop (max 5 iterations)
@@ -182,6 +184,7 @@ End-to-end: spec → TDD → static audit → gas optimization. Produces a produ
 **Triggers:** "build a contract" · "create a" · "implement a smart contract" · "write a smart contract"
 
 **Pipeline:**
+
 ```
 contract-developer → [tdd loop] → auditor (--static) → gas-optimizer (baseline)
         → contract-developer (applies gas suggestions)
@@ -201,6 +204,7 @@ Generates a deployment script, dry-runs it, presents it to you for review, then 
 **Triggers:** "deploy to" · "ship to" · "deploy contract" · "launch on"
 
 **Pipeline:**
+
 ```
 deploy-engineer (generates script + dry-run)
         ↓ presents plan + estimated gas cost
@@ -213,14 +217,14 @@ dapp-developer (updates frontend with new addresses)
 
 **Supported chains:**
 
-| Mainnet | Testnet |
-|---|---|
-| Ethereum (1) | Sepolia (11155111) |
-| Arbitrum (42161) | Holesky (17000) |
-| Optimism (10) | Arbitrum Sepolia (421614) |
-| Base (8453) | Optimism Sepolia (11155420) |
-| Polygon (137) | Base Sepolia (84532) |
-| Avalanche (43114) | |
+| Mainnet           | Testnet                     |
+| ----------------- | --------------------------- |
+| Ethereum (1)      | Sepolia (11155111)          |
+| Arbitrum (42161)  | Holesky (17000)             |
+| Optimism (10)     | Arbitrum Sepolia (421614)   |
+| Base (8453)       | Optimism Sepolia (11155420) |
+| Polygon (137)     | Base Sepolia (84532)        |
+| Avalanche (43114) |                             |
 
 ---
 
@@ -231,6 +235,7 @@ Identifies gas waste, applies optimizations one category at a time, and must sho
 **Triggers:** "optimize gas" · "reduce gas costs" · "gas report" · "too expensive" · "lower transaction costs"
 
 **Pipeline:**
+
 ```
 gas-optimizer (baseline snapshot)
         → contract-developer (applies suggestions)
@@ -249,6 +254,7 @@ Tests contracts against real on-chain state at a pinned block number. Uses `debu
 **Triggers:** "fork test" · "test against mainnet" · "test with real state" · "simulate on mainnet"
 
 **Pipeline:**
+
 ```
 integration-test-engineer (writes + runs fork tests)
         ↓ on failure
@@ -270,6 +276,7 @@ The most comprehensive skill. Runs the full hybrid pipeline across all 10 agents
 **Triggers:** "build the full protocol" · "build everything" · "start from scratch" · "end-to-end"
 
 **Pipeline:**
+
 ```
 Phase 1 (sequential)
   contract-developer + [tdd loop with unit-test-engineer]
@@ -462,22 +469,22 @@ Integrates deployed contracts into your frontend. Framework-agnostic — auto-de
 
 eth-agents auto-detects your project setup. You never need to configure anything:
 
-| What | How it's detected |
-|---|---|
-| Solidity toolchain | `foundry.toml` → Foundry · `hardhat.config.*` → Hardhat |
-| Frontend framework | `next` / `react` / `vue` / `nuxt` in `package.json` |
-| Web3 library | `wagmi.config.*` → wagmi/viem · `"ethers"` in deps → ethers.js v6 |
-| Package manager | `bun.lockb` → bun · `pnpm-lock.yaml` → pnpm · `yarn.lock` → yarn · else → npm |
+| What               | How it's detected                                                             |
+| ------------------ | ----------------------------------------------------------------------------- |
+| Solidity toolchain | `foundry.toml` → Foundry · `hardhat.config.*` → Hardhat                       |
+| Frontend framework | `next` / `react` / `vue` / `nuxt` in `package.json`                           |
+| Web3 library       | `wagmi.config.*` → wagmi/viem · `"ethers"` in deps → ethers.js v6             |
+| Package manager    | `bun.lockb` → bun · `pnpm-lock.yaml` → pnpm · `yarn.lock` → yarn · else → npm |
 
 **Graceful degradation** — if a tool isn't installed, agents report what's missing and continue with what's available:
 
-| Missing tool | Behavior |
-|---|---|
-| Slither / Mythril | Auditor continues with manual pattern analysis |
-| Echidna | Security Specialist / Integration Test Engineer skips that step |
-| Halmos / Certora | Security Specialist prompts to install, skips formal verification |
+| Missing tool       | Behavior                                                                  |
+| ------------------ | ------------------------------------------------------------------------- |
+| Slither / Mythril  | Auditor continues with manual pattern analysis                            |
+| Echidna            | Security Specialist / Integration Test Engineer skips that step           |
+| Halmos / Certora   | Security Specialist prompts to install, skips formal verification         |
 | No toolchain found | Orchestrator halts and asks you to run `forge init` or `npx hardhat init` |
-| RPC URL missing | Agent halts with the exact env var name you need to add |
+| RPC URL missing    | Agent halts with the exact env var name you need to add                   |
 
 ---
 
@@ -485,12 +492,12 @@ eth-agents auto-detects your project setup. You never need to configure anything
 
 eth-agents is designed to minimize token usage without sacrificing quality.
 
-| Layer | Mechanism | Savings |
-|---|---|---|
-| Model routing | haiku for simple tasks, sonnet for implementation, opus only for security + full-protocol | ~35% |
-| Prompt caching | Static agent role definitions are cached after first invocation | ~15% |
-| Output constraints | Per-agent token limits, artifacts always before prose | ~12% |
-| **Total** | | **~50-60%** |
+| Layer              | Mechanism                                                                                 | Savings     |
+| ------------------ | ----------------------------------------------------------------------------------------- | ----------- |
+| Model routing      | haiku for simple tasks, sonnet for implementation, opus only for security + full-protocol | ~35%        |
+| Prompt caching     | Static agent role definitions are cached after first invocation                           | ~15%        |
+| Output constraints | Per-agent token limits, artifacts always before prose                                     | ~12%        |
+| **Total**          |                                                                                           | **~50-60%** |
 
 Prompt caching works because each agent file is >1024 tokens (Anthropic's automatic caching threshold) and the static role definition is always at the top — identical across invocations and therefore cached.
 
@@ -507,6 +514,7 @@ eth-agents includes a minimal MCP server that feeds real-time status to the Clau
 ```
 
 The HUD exposes 6 tools used internally by agents:
+
 - `eth_skill_start` — called by orchestrator at pipeline entry
 - `eth_phase_update` — called at each phase transition
 - `eth_agent_update` — called by each agent on start and completion
@@ -582,4 +590,3 @@ node scripts/validate.mjs
 ## License
 
 MIT — see [LICENSE](LICENSE)
-
