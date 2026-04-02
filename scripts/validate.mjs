@@ -27,7 +27,8 @@ for (const agent of AGENTS) {
   if (tokenEstimate < 1024) fail(`agents/${agent}.md — too short for prompt caching (${tokenEstimate} tokens, need >1024)`)
   else pass(`agents/${agent}.md — ${tokenEstimate} tokens (cacheable)`)
   for (const section of AGENT_SECTIONS) {
-    if (!content.includes(section)) fail(`agents/${agent}.md — missing section: ${section}`)
+    const lines = content.split('\n')
+    if (!lines.some(l => l.trim() === section)) fail(`agents/${agent}.md — missing section: ${section}`)
     else pass(`agents/${agent}.md — has ${section}`)
   }
 }
@@ -47,7 +48,8 @@ for (const skill of SKILLS) {
     else pass(`skills/${skill}/SKILL.md — has ${field}`)
   }
   for (const section of SKILL_SECTIONS) {
-    if (!content.includes(section)) fail(`skills/${skill}/SKILL.md — missing section: ${section}`)
+    const lines = content.split('\n')
+    if (!lines.some(l => l.trim() === section)) fail(`skills/${skill}/SKILL.md — missing section: ${section}`)
     else pass(`skills/${skill}/SKILL.md — has ${section}`)
   }
 }
@@ -71,10 +73,18 @@ const pluginPath = join(root, '.claude-plugin', 'plugin.json')
 if (!existsSync(pluginPath)) {
   fail('.claude-plugin/plugin.json — file missing')
 } else {
-  const plugin = JSON.parse(readFileSync(pluginPath, 'utf8'))
-  for (const field of ['name', 'version', 'description', 'skills', 'mcpServers']) {
-    if (!plugin[field]) fail(`plugin.json — missing field: ${field}`)
-    else pass(`plugin.json — has "${field}"`)
+  let plugin
+  try {
+    plugin = JSON.parse(readFileSync(pluginPath, 'utf8'))
+  } catch (e) {
+    fail(`plugin.json — invalid JSON: ${e.message}`)
+    plugin = null
+  }
+  if (plugin) {
+    for (const field of ['name', 'version', 'description', 'skills', 'mcpServers']) {
+      if (!plugin[field]) fail(`plugin.json — missing field: ${field}`)
+      else pass(`plugin.json — has "${field}"`)
+    }
   }
 }
 
