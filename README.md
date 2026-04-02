@@ -79,17 +79,16 @@ Each agent has a **specific role**, **defined tools**, **output constraints**, a
 
 ## Install
 
-Install directly from GitHub:
+**Step 1** — add the marketplace (one-time):
 
 ```bash
-claude plugin install github:cayocan/eth-agents
+claude plugin marketplace add github:cayocan/eth-agents
 ```
 
-Or, once approved in the [community registry](https://github.com/anthropics/claude-plugins-community):
+**Step 2** — install the plugin:
 
 ```bash
-claude plugin marketplace add anthropics/claude-plugins-community
-claude plugin install eth-agents@claude-community
+claude plugin install eth-agents@eth-agents
 ```
 
 That's it. No configuration files to create, no env vars to set, no toolchain to specify.

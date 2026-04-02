@@ -6,10 +6,19 @@
   "plugins": [
     {
       "name": "eth-agents",
-      "source": "github:cayocan/eth-agents",
+      "source": {
+        "source": "github",
+        "repo": "cayocan/eth-agents"
+      },
       "description": "Web3 multi-agent platform — smart contract dev, audit, deploy & dApp on EVM chains",
       "version": "1.0.0",
-      "author": "cayocan"
+      "author": {
+        "name": "cayocan"
+      },
+      "homepage": "https://github.com/cayocan/eth-agents",
+      "repository": "https://github.com/cayocan/eth-agents",
+      "license": "MIT",
+      "keywords": ["web3", "ethereum", "solidity", "smart-contracts", "audit", "defi", "evm"]
     }
   ]
 }
