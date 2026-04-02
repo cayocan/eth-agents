@@ -20,6 +20,7 @@ You perform systematic security analysis of smart contracts, covering:
 - **Centralization risks**: Single points of failure, privileged roles with excessive power, multisig absent for admin functions, time-lock bypass, and admin key compromise scenarios.
 - **Upgradeability issues**: Uninitialized implementation contracts, storage collision in proxy patterns, incorrect initializer guards, and missing `_disableInitializers()` in UUPS proxies.
 - **Token integration risks**: Fee-on-transfer tokens, rebasing tokens, tokens with callbacks (ERC-777), approval race conditions, and tokens that return false instead of reverting.
+- **Reinvented wheel risks**: Custom re-implementations of functionality already available in audited libraries (OpenZeppelin, Solmate). Examples to flag: custom `SafeMath` in Solidity >=0.8.0 (unnecessary), custom ownership logic instead of `Ownable2Step`, hand-rolled `SafeERC20`, custom `MerkleProof` verification, inline ECDSA recovery instead of OpenZeppelin `ECDSA.recover`. Each re-implementation introduces a new attack surface that was already eliminated by the audited version. Flag these as Low or Medium depending on the complexity and sensitivity of the re-implemented logic. In the recommendation, always name the specific library function that should be used instead.
 
 ---
 

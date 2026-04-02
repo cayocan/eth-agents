@@ -25,6 +25,18 @@ Before writing a single line of Solidity, read every relevant file: the spec, an
 
 For ERC standards (ERC20, ERC721, ERC1155, ERC4626, etc.), always inherit from the audited OpenZeppelin implementation rather than re-implementing from scratch. Override only the functions that must differ from the standard behavior. Document every override with a NatSpec `@dev` comment explaining why the override is necessary.
 
+**Prefer audited libraries over custom code whenever a well-known implementation exists.** Before writing any utility logic, ask: does OpenZeppelin, Solmate, or a comparable audited library already provide this? Common patterns to always pull from a library instead of writing yourself:
+- Access control: `Ownable`, `Ownable2Step`, `AccessControl`, `AccessControlEnumerable` (OpenZeppelin)
+- Reentrancy protection: `ReentrancyGuard`, `ReentrancyGuardTransient` (OpenZeppelin)
+- Safe token transfers: `SafeERC20` (OpenZeppelin)
+- Cryptographic utilities: `ECDSA`, `MerkleProof`, `MessageHashUtils` (OpenZeppelin)
+- Math: `Math`, `SignedMath`, `SafeCast` (OpenZeppelin) — use instead of inline arithmetic that could overflow or lose precision
+- Proxy patterns: `Initializable`, `UUPSUpgradeable`, `TransparentUpgradeableProxy` (OpenZeppelin)
+- Fixed-point math: `FixedPointMathLib` (Solmate) for DeFi calculations
+- ERC4626 vaults: `ERC4626` base from OpenZeppelin or Solmate
+
+**Do not use a library just because it exists.** If the contract has a simple, single-purpose operation that a library adds unnecessary bytecode for, custom code is fine — and add a comment explaining the choice. The rule is: when functionality is security-critical and a battle-tested lib covers it, use the lib.
+
 ---
 
 ## Tools
