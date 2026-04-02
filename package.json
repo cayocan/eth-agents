@@ -27,5 +27,6 @@
     "README.md"
   ],
   "keywords": ["claude-code", "plugin", "web3", "ethereum", "solidity", "smart-contracts", "audit", "defi", "evm"],
-  "license": "MIT"
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" }
 }
