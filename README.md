@@ -79,6 +79,14 @@ Each agent has a **specific role**, **defined tools**, **output constraints**, a
 
 ## Install
 
+Install directly from GitHub (available now):
+
+```bash
+claude plugin install github:cayocan/eth-agents
+```
+
+Or, if listed in the [Claude Code community registry](https://github.com/anthropics/claude-plugins-community):
+
 ```bash
 claude plugin install eth-agents
 ```
