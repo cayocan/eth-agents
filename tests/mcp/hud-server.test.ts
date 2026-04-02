@@ -54,6 +54,7 @@ describe('HUDServer — agentUpdate', () => {
     s.agentUpdate('auditor', 'active')
     s.agentUpdate('auditor', 'done')
     expect(s.getStatusline()).not.toContain('auditor')
+    expect(s.getStatusline()).toBe('⟠ [audit]')
   })
 
   it('shows multiple agents joined by · when active', () => {
@@ -90,6 +91,8 @@ describe('HUDServer — tokenUpdate', () => {
   it('shows 80% cached on subsequent invocation', () => {
     const s = new HUDServer()
     s.skillStart('audit', 1)
+    // 80% is a fixed constant — cache hit estimated at 80% on subsequent
+    // same-skill invocations (best-effort approximation per spec).
     s.tokenUpdate(4000, true)
     expect(s.getStatusline()).toContain('80% cached')
   })
