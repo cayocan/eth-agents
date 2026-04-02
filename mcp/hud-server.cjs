@@ -20902,6 +20902,21 @@ var HUDServer = class {
 };
 
 // mcp/server.ts
+function requireString(args, key) {
+  const val = args[key];
+  if (typeof val !== "string") throw new Error(`Missing or invalid param: ${key}`);
+  return val;
+}
+function requireNumber(args, key) {
+  const val = args[key];
+  if (typeof val !== "number") throw new Error(`Missing or invalid param: ${key}`);
+  return val;
+}
+function requireBoolean(args, key) {
+  const val = args[key];
+  if (typeof val !== "boolean") throw new Error(`Missing or invalid param: ${key}`);
+  return val;
+}
 var hud = new HUDServer();
 var server = new Server(
   { name: "eth-agents-hud", version: "1.0.0" },
@@ -20974,16 +20989,20 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const a = args;
   switch (name) {
     case "eth_skill_start":
-      hud.skillStart(a.skill, a.totalPhases);
+      hud.skillStart(requireString(a, "skill"), requireNumber(a, "totalPhases"));
       return { content: [{ type: "text", text: "ok" }] };
     case "eth_phase_update":
-      hud.phaseUpdate(a.current, a.label);
+      hud.phaseUpdate(requireNumber(a, "current"), requireString(a, "label"));
       return { content: [{ type: "text", text: "ok" }] };
-    case "eth_agent_update":
-      hud.agentUpdate(a.agent, a.status);
+    case "eth_agent_update": {
+      const agent = requireString(a, "agent");
+      const status = requireString(a, "status");
+      if (status !== "active" && status !== "done") throw new Error(`Missing or invalid param: status`);
+      hud.agentUpdate(agent, status);
       return { content: [{ type: "text", text: "ok" }] };
+    }
     case "eth_token_update":
-      hud.tokenUpdate(a.outputChars, a.isSubsequentInvocation);
+      hud.tokenUpdate(requireNumber(a, "outputChars"), requireBoolean(a, "isSubsequentInvocation"));
       return { content: [{ type: "text", text: "ok" }] };
     case "eth_get_statusline":
       return { content: [{ type: "text", text: hud.getStatusline() }] };

@@ -48,7 +48,7 @@ export class HUDServer {
 
   tokenUpdate(outputChars: number, isSubsequentInvocation: boolean): void {
     this.state.tokenCount += Math.round(outputChars / 4)
-    if (isSubsequentInvocation) this.state.cacheHitRate = 80
+    if (isSubsequentInvocation) this.state.cacheHitRate = 80 // TODO: placeholder — best-effort approximation per spec, not measured from actual cache hits
   }
 
   reset(): void {

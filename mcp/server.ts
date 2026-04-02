@@ -7,6 +7,22 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { HUDServer } from './hud-server.js'
 
+function requireString(args: Record<string, unknown>, key: string): string {
+  const val = args[key]
+  if (typeof val !== 'string') throw new Error(`Missing or invalid param: ${key}`)
+  return val
+}
+function requireNumber(args: Record<string, unknown>, key: string): number {
+  const val = args[key]
+  if (typeof val !== 'number') throw new Error(`Missing or invalid param: ${key}`)
+  return val
+}
+function requireBoolean(args: Record<string, unknown>, key: string): boolean {
+  const val = args[key]
+  if (typeof val !== 'boolean') throw new Error(`Missing or invalid param: ${key}`)
+  return val
+}
+
 const hud = new HUDServer()
 
 const server = new Server(
@@ -83,16 +99,20 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
   switch (name) {
     case 'eth_skill_start':
-      hud.skillStart(a.skill as string, a.totalPhases as number)
+      hud.skillStart(requireString(a, 'skill'), requireNumber(a, 'totalPhases'))
       return { content: [{ type: 'text', text: 'ok' }] }
     case 'eth_phase_update':
-      hud.phaseUpdate(a.current as number, a.label as string)
+      hud.phaseUpdate(requireNumber(a, 'current'), requireString(a, 'label'))
       return { content: [{ type: 'text', text: 'ok' }] }
-    case 'eth_agent_update':
-      hud.agentUpdate(a.agent as string, a.status as 'active' | 'done')
+    case 'eth_agent_update': {
+      const agent = requireString(a, 'agent')
+      const status = requireString(a, 'status')
+      if (status !== 'active' && status !== 'done') throw new Error(`Missing or invalid param: status`)
+      hud.agentUpdate(agent, status)
       return { content: [{ type: 'text', text: 'ok' }] }
+    }
     case 'eth_token_update':
-      hud.tokenUpdate(a.outputChars as number, a.isSubsequentInvocation as boolean)
+      hud.tokenUpdate(requireNumber(a, 'outputChars'), requireBoolean(a, 'isSubsequentInvocation'))
       return { content: [{ type: 'text', text: 'ok' }] }
     case 'eth_get_statusline':
       return { content: [{ type: 'text', text: hud.getStatusline() }] }
