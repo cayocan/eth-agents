@@ -82,7 +82,7 @@ Each agent has a **specific role**, **defined tools**, **output constraints**, a
 install the plugin:
 
 ```bash
-claude plugin install eth-agents@eth-agents
+claude plugin install eth-agents
 ```
 
 That's it. No configuration files to create, no env vars to set, no toolchain to specify.
