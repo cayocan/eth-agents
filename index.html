@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>eth-agents — AI Agent Platform for Ethereum</title>
-<link rel="icon" type="image/x-icon" href=".gh-pages-assets/favicon.ico"/>
-<link rel="icon" type="image/svg+xml" href=".gh-pages-assets/favicon.svg"/>
-<link rel="apple-touch-icon" href=".gh-pages-assets/apple-touch-icon.png"/>
+  <link rel="icon" type="image/x-icon" href="./.gh-pages-assets/favicon.ico"/>
+  <link rel="icon" type="image/svg+xml" href="./.gh-pages-assets/favicon.svg"/>
+  <link rel="apple-touch-icon" href="./.gh-pages-assets/apple-touch-icon.png"/>
 <meta name="description" content="10 specialized AI agents for Ethereum smart contract development. Built for Claude Code. Zero configuration."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
@@ -319,7 +319,7 @@ h1 .agents-word { color: #fff; }
   position: relative;
 }
 .install-banner .prompt { color: var(--cyan); margin-right: 8px; }
-.install-banner .cmd { color: #fff; }
+.install-banner .cmd { color: #fff; display: inline-block; padding-right: 72px; }
 .copy-btn {
   position: absolute;
   right: 10px;
@@ -335,6 +335,7 @@ h1 .agents-word { color: #fff; }
   transition: all 0.2s;
   letter-spacing: 0.05em;
 }
+.copy-btn { z-index: 5; background: rgba(12,16,20,0.6); }
 .copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
 
 /* ── SECTION TITLES ── */
@@ -1278,12 +1279,12 @@ footer {
   <div class="install-banner">
     <span class="prompt">$</span>
     <span class="cmd">claude plugin install eth-agents</span>
-    <button class="copy-btn" onclick="navigator.clipboard.writeText('claude plugin install eth-agents@eth-agents');this.textContent='copied!';setTimeout(()=>this.textContent='copy',1500)">copy</button>
+    <button class="copy-btn" onclick="navigator.clipboard.writeText('claude plugin install eth-agents');this.textContent='copied!';setTimeout(()=>this.textContent='copy',1500)">copy</button>
   </div>
 
   <div class="hero-mascot-wrap">
     <div class="mascot-glow-ring"></div>
-    <img src=".gh-pages-assets/mascot-icon.png" alt="eth-agents mascot" class="hero-mascot"/>
+    <img src="./.gh-pages-assets/mascot-icon.png" alt="eth-agents mascot" class="hero-mascot"/>
   </div>
 </section>
 
@@ -1368,7 +1369,7 @@ footer {
     </div>
 
     <div class="agents-team-banner reveal">
-      <img src=".gh-pages-assets/mascot-team.png" alt="eth-agents team — Auditor, Developer, Deploy, Security" class="agents-team-img"/>
+      <img src="./.gh-pages-assets/mascot-team.png" alt="eth-agents team — Auditor, Developer, Deploy, Security" class="agents-team-img"/>
       <div class="agents-team-overlay">
         <span class="team-tag">auditor</span>
         <span class="team-tag">developer</span>
@@ -1690,7 +1691,7 @@ footer {
       <div class="install-step">
         <div class="install-step-num">1</div>
         <div>
-          <div class="install-step-code"><span class="cmd">claude plugin install eth-agents@eth-agents</span></div>
+          <div class="install-step-code"><span class="cmd">claude plugin install eth-agents</span></div>
           <div class="install-step-sub">Install the plugin via Claude Code</div>
         </div>
       </div>
