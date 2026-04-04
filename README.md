@@ -5,11 +5,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/cayocan/eth-agents"><img src="https://img.shields.io/github/stars/cayocan/eth-agents?style=flat-square" alt="GitHub stars"/></a>
-  <a href="https://github.com/cayocan/eth-agents/network/members"><img src="https://img.shields.io/github/forks/cayocan/eth-agents?style=flat-square" alt="GitHub forks"/></a>
-  <a href="https://github.com/cayocan/eth-agents/issues"><img src="https://img.shields.io/github/issues/cayocan/eth-agents?style=flat-square" alt="GitHub issues"/></a>
-  <a href="https://github.com/cayocan/eth-agents/releases"><img src="https://img.shields.io/github/v/release/cayocan/eth-agents?style=flat-square" alt="Latest release"/></a>
-  <a href="https://github.com/cayocan/eth-agents"><img src="https://img.shields.io/github/downloads/cayocan/eth-agents/total?style=flat-square" alt="Downloads"/></a>
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-blue?style=flat-square" alt="Claude Code Plugin"/>
   <img src="https://img.shields.io/badge/Solidity-0.8.x-363636?style=flat-square&logo=solidity" alt="Solidity"/>
   <img src="https://img.shields.io/badge/Foundry-compatible-red?style=flat-square" alt="Foundry"/>
@@ -37,20 +32,7 @@ You:  "audit this contract for reentrancy vulnerabilities"
       ↓
 Orchestrator activates the audit pipeline
       ↓
-      ## Donate
-
-      Support the project by sending a small tip to one of the addresses below. Replace the placeholder addresses in the links with your wallet addresses.
-
-      [![Donate ETH](https://img.shields.io/badge/Donate-ETH-627EEA?style=flat-square&logo=ethereum&logoColor=white)](ethereum:REPLACE_WITH_YOUR_ETH_ADDRESS)
-      [![Donate Polygon (MATIC)](https://img.shields.io/badge/Donate-MATIC-8247E5?style=flat-square&logo=polygon&logoColor=white)](https://polygonscan.com/address/REPLACE_WITH_YOUR_POLYGON_ADDRESS)
-      [![Donate BSC (BNB)](https://img.shields.io/badge/Donate-BNB-F0B90B?style=flat-square&logo=binance&logoColor=black)](https://bscscan.com/address/REPLACE_WITH_YOUR_BSC_ADDRESS)
-      [![Donate Solana (SOL)](https://img.shields.io/badge/Donate-SOL-00FFA3?style=flat-square&logo=solana&logoColor=black)](https://solscan.io/account/REPLACE_WITH_YOUR_SOLANA_ADDRESS)
-
-      Notes:
-      - To make the badge open a wallet (deep link), replace `REPLACE_WITH_YOUR_ETH_ADDRESS` with your `0x...` address — browsers with a web3 wallet will prompt the user to open the wallet.
-      - For Polygon, BSC and Solana the badges link to the address on the respective block explorer. Replace the placeholders with your addresses to allow users to view and send.
-      - If you want these donation buttons on the website as well, I can add them to `index.html` (recommended to use explorer links or a hosted redirect to avoid exposing raw address in JS).
-
+Auditor scans for reentrancy, flash loans, MEV, access control issues
       ↓
 Security Specialist simulates exploits for Critical/High findings
       ↓
