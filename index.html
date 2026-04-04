@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>eth-agents — AI Agent Platform for Ethereum</title>
+<meta name="description" content="10 specialized AI agents for Ethereum smart contract development. Built for Claude Code. Zero configuration."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --bg: #080b10;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --eth: #627EEA;
+  --eth-dim: #2a3a7a;
+  --cyan: #00ffe0;
+  --cyan-dim: #004d45;
+  --amber: #ffb800;
+  --red: #ff4444;
+  --green: #00ff88;
+  --text: #c9d1d9;
+  --text-dim: #586069;
+  --border: #1c2a38;
+  --border-bright: #2a4060;
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --body-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINES overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── GRID BG ── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(98,126,234,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98,126,234,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+  background: rgba(8,11,16,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--cyan);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.nav-logo span { color: var(--eth); }
+
+nav ul {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+nav ul a {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+nav ul a:hover { color: var(--cyan); }
+
+.nav-cta {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 6px 16px;
+  border: 1px solid var(--eth);
+  color: var(--eth);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: all 0.2s;
+}
+.nav-cta:hover {
+  background: var(--eth);
+  color: #fff;
+}
+
+/* ── SECTIONS ── */
+section { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(98,126,234,0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hero-glow-2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,224,0.06) 0%, transparent 70%);
+  top: 30%;
+  right: 10%;
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 4px 12px;
+  border: 1px solid var(--eth-dim);
+  color: var(--eth);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.6s ease both;
+}
+
+.badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--eth);
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+h1 {
+  font-family: var(--display);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.7s ease 0.1s both;
+}
+
+h1 .eth-word {
+  color: var(--eth);
+  position: relative;
+}
+h1 .eth-word::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--eth), var(--cyan));
+}
+
+h1 .agents-word { color: #fff; }
+
+.hero-sub {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  animation: fadeInUp 0.7s ease 0.2s both;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.7s ease 0.25s both;
+}
+
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  display: block;
+  line-height: 1;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  animation: fadeInUp 0.7s ease 0.3s both;
+}
+
+.btn-primary {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 12px 28px;
+  background: var(--eth);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.4s;
+}
+.btn-primary:hover::before { left: 100%; }
+.btn-primary:hover { background: #7a99f7; transform: translateY(-1px); }
+
+.btn-ghost {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 12px 28px;
+  border: 1px solid var(--border-bright);
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.btn-ghost:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ── INSTALL BANNER ── */
+.install-banner {
+  margin-top: 3.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 14px 28px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  color: var(--text-dim);
+  max-width: 520px;
+  text-align: left;
+  animation: fadeInUp 0.7s ease 0.4s both;
+  position: relative;
+}
+.install-banner .prompt { color: var(--cyan); margin-right: 8px; }
+.install-banner .cmd { color: #fff; }
+.copy-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1px solid var(--border-bright);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ── SECTION TITLES ── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--eth);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  font-family: var(--body-mono);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  max-width: 520px;
+  line-height: 1.8;
+}
+
+/* ── HOW IT WORKS ── */
+#how {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  margin-top: 4rem;
+}
+
+.terminal {
+  background: #0a0f15;
+  border: 1px solid var(--border);
+  border-top: none;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.9;
+  position: relative;
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.terminal-body {
+  padding: 20px 20px;
+}
+
+.t-prompt { color: var(--cyan); }
+.t-user { color: #fff; }
+.t-comment { color: var(--text-dim); }
+.t-arrow { color: var(--eth); }
+.t-agent { color: var(--amber); }
+.t-success { color: var(--green); }
+.t-dim { color: var(--text-dim); }
+.t-warn { color: var(--red); }
+.t-high { color: var(--amber); }
+.t-med { color: #ff8800; }
+.t-low { color: var(--cyan); }
+.t-info { color: var(--text-dim); }
+
+.t-line { display: block; margin: 1px 0; }
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: var(--cyan);
+  vertical-align: middle;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+}
+
+.how-steps { list-style: none; }
+.how-step {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  align-items: flex-start;
+}
+.step-num {
+  font-family: var(--display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--eth-dim);
+  line-height: 1;
+  min-width: 48px;
+}
+.step-content h3 {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.step-content p {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* ── AGENTS ── */
+#agents {
+  padding: 8rem 2rem;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.agents-inner { max-width: 1200px; margin: 0 auto; }
+
+.agents-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 4rem;
+  gap: 2rem;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.agent-card {
+  background: var(--bg2);
+  padding: 24px 24px 20px;
+  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.agent-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+.agent-card:hover { background: var(--bg3); }
+.agent-card:hover::before { background: var(--eth); }
+
+.agent-card.security:hover::before { background: var(--red); }
+.agent-card.testing:hover::before { background: var(--amber); }
+.agent-card.ops:hover::before { background: var(--green); }
+.agent-card.orchestrator-card:hover::before {
+  background: linear-gradient(90deg, var(--eth), var(--cyan));
+}
+
+.agent-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tag-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.agent-card.dev .tag-dot { background: var(--eth); }
+.agent-card.dev .agent-tag { color: var(--eth); }
+.agent-card.security .tag-dot { background: var(--red); }
+.agent-card.security .agent-tag { color: var(--red); }
+.agent-card.testing .tag-dot { background: var(--amber); }
+.agent-card.testing .agent-tag { color: var(--amber); }
+.agent-card.ops .tag-dot { background: var(--green); }
+.agent-card.ops .agent-tag { color: var(--green); }
+.agent-card.orchestrator-card .tag-dot { background: var(--cyan); }
+.agent-card.orchestrator-card .agent-tag { color: var(--cyan); }
+
+.agent-name {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.agent-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+
+.agent-model {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  display: inline-block;
+}
+
+/* ── SKILLS ── */
+#skills {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skills-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-top: 4rem;
+  align-items: start;
+}
+
+.skill-list { display: flex; flex-direction: column; gap: 1px; }
+
+.skill-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-item::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--eth);
+  transform: scaleY(0);
+  transition: transform 0.2s;
+}
+
+.skill-item:hover::after,
+.skill-item.active::after { transform: scaleY(1); }
+.skill-item:hover, .skill-item.active {
+  background: var(--bg2);
+  border-color: var(--border-bright);
+}
+
+.skill-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.skill-name {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+}
+
+.skill-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.skill-desc {
+  font-size: 0.77rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.skill-detail {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--eth);
+  padding: 28px;
+  position: sticky;
+  top: 80px;
+}
+
+.skill-detail-name {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--eth);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.skill-detail-title {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.skill-detail-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.pipeline-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+  margin-bottom: 16px;
+}
+.pipeline-box .pl-agent { color: var(--amber); }
+.pipeline-box .pl-arrow { color: var(--eth); }
+.pipeline-box .pl-cond { color: var(--cyan); }
+
+.trigger-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.trigger-tag {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border-bright);
+  color: var(--text-dim);
+}
+
+/* ── AUDIT DEMO ── */
+#demo {
+  padding: 8rem 2rem;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.demo-inner { max-width: 1100px; margin: 0 auto; }
+
+.demo-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 4rem;
+  align-items: start;
+}
+
+.audit-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.audit-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.audit-card-title {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: #fff;
+}
+
+.audit-badge {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.badge-done { background: var(--green); color: #000; }
+
+.severity-summary {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.sev-item {
+  background: var(--bg);
+  padding: 14px 10px;
+  text-align: center;
+}
+.sev-num {
+  font-family: var(--display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sev-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+.sev-critical .sev-num { color: #ff2222; }
+.sev-high .sev-num { color: var(--amber); }
+.sev-med .sev-num { color: #ff8800; }
+.sev-low .sev-num { color: var(--cyan); }
+.sev-info .sev-num { color: var(--text-dim); }
+
+.finding-list { padding: 0; }
+
+.finding-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.finding-item:last-child { border-bottom: none; }
+
+.finding-severity {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.sev-HIGH { background: rgba(255,184,0,0.15); color: var(--amber); border: 1px solid rgba(255,184,0,0.3); }
+.sev-MED { background: rgba(255,136,0,0.1); color: #ff8800; border: 1px solid rgba(255,136,0,0.3); }
+.sev-LOW { background: rgba(0,255,224,0.08); color: var(--cyan); border: 1px solid rgba(0,255,224,0.2); }
+.sev-INFO { background: rgba(255,255,255,0.04); color: var(--text-dim); border: 1px solid var(--border); }
+
+.finding-text h4 {
+  font-family: var(--body-mono);
+  font-size: 0.78rem;
+  color: #fff;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+.finding-text p {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* right panel */
+.demo-meta { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.meta-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 20px;
+}
+
+.meta-card-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.meta-card p {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.meta-card code {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  background: var(--bg2);
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  color: var(--cyan);
+}
+
+.token-bar {
+  margin-top: 12px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.token-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--eth), var(--cyan));
+  border-radius: 2px;
+}
+
+.token-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+.token-info .cached { color: var(--green); }
+
+/* ── TOKENS ── */
+#tokens {
+  padding: 8rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tokens-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  margin-top: 4rem;
+  align-items: center;
+}
+
+.savings-display {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 340px;
+}
+
+.savings-ring {
+  position: relative;
+  width: 260px;
+  height: 260px;
+}
+
+.savings-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.ring-bg { fill: none; stroke: var(--border); stroke-width: 14; }
+.ring-eth { fill: none; stroke: var(--eth); stroke-width: 14; stroke-dasharray: 540; stroke-dashoffset: 216; stroke-linecap: round; }
+.ring-cyan { fill: none; stroke: var(--cyan); stroke-width: 14; stroke-dasharray: 540; stroke-dashoffset: 432; stroke-linecap: round; }
+
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ring-num {
+  font-family: var(--display);
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.ring-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+.savings-legend {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend-text { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+.legend-text strong { color: #fff; display: block; }
+
+.tokens-table { width: 100%; border-collapse: collapse; }
+.tokens-table thead th {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.tokens-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  vertical-align: middle;
+}
+.tokens-table tbody tr:last-child td { border-bottom: none; }
+.tokens-table tbody tr:hover td { background: var(--bg3); }
+
+.layer-name { font-family: var(--mono); color: var(--cyan); }
+.saving-pct {
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--green);
+  font-size: 1rem;
+}
+.saving-desc { color: var(--text-dim); font-size: 0.72rem; }
+
+/* ── INSTALL ── */
+#install {
+  padding: 8rem 2rem;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.install-inner { max-width: 700px; margin: 0 auto; }
+
+.install-title {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+.install-title span { color: var(--eth); }
+
+.install-sub {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 3rem;
+  line-height: 1.8;
+}
+
+.install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  margin-bottom: 2.5rem;
+}
+
+.install-step {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.install-step-num {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--eth-dim);
+}
+
+.install-step-code {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+.install-step-code .cmd { color: var(--cyan); }
+.install-step-sub {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+.install-req {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 1.5rem;
+}
+.install-req a { color: var(--eth); text-decoration: none; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-logo {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.footer-logo span { color: var(--eth); }
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--cyan); }
+
+.footer-copy {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .how-grid, .skills-layout, .demo-layout, .tokens-layout {
+    grid-template-columns: 1fr;
+  }
+  .hero-stats { gap: 2rem; }
+  nav ul { display: none; }
+  .agents-intro { flex-direction: column; }
+  footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+  .savings-display { height: auto; flex-direction: column; }
+  .savings-legend { position: static; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+  .severity-summary { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">⟠ <span>eth</span>-agents</a>
+  <ul>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#demo">Audit demo</a></li>
+    <li><a href="#install">Install</a></li>
+  </ul>
+  <a href="https://github.com/cayocan/eth-agents" class="nav-cta" target="_blank">GitHub ↗</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+
+  <div class="badge">Claude Code Plugin · Open Source</div>
+
+  <h1>
+    <span class="eth-word">eth</span><span class="agents-word">-agents</span>
+  </h1>
+
+  <p class="hero-sub">
+    A team of 10 specialized AI agents for Ethereum smart contract development.<br/>
+    Built for Claude Code. Zero configuration. Natural language interface.
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">10</span>
+      <span class="stat-label">Specialized Agents</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">9</span>
+      <span class="stat-label">Skills / Pipelines</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">~55%</span>
+      <span class="stat-label">Token Savings</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">0</span>
+      <span class="stat-label">Config Files</span>
+    </div>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#install" class="btn-primary">Get Started</a>
+    <a href="https://github.com/cayocan/eth-agents" class="btn-ghost" target="_blank">View on GitHub</a>
+  </div>
+
+  <div class="install-banner">
+    <span class="prompt">$</span>
+    <span class="cmd">claude plugin install eth-agents</span>
+    <button class="copy-btn" onclick="navigator.clipboard.writeText('claude plugin install eth-agents@eth-agents');this.textContent='copied!';setTimeout(()=>this.textContent='copy',1500)">copy</button>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="reveal">
+    <div class="section-label">// 01 — How it works</div>
+    <h2 class="section-title">Describe. Delegate. Ship.</h2>
+    <p class="section-desc">You write in plain English. The orchestrator routes your intent to the right agent pipeline. Agents coordinate automatically — no commands to remember, no toolchain configuration.</p>
+  </div>
+
+  <div class="how-grid">
+    <div class="reveal">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <div class="terminal-title">claude code — eth-agents</div>
+        </div>
+        <div class="terminal-body">
+          <span class="t-line"><span class="t-prompt">you  ›</span> <span class="t-user">audit this contract for reentrancy</span></span>
+          <span class="t-line">&nbsp;</span>
+          <span class="t-line"><span class="t-arrow">⟠</span> <span class="t-agent">orchestrator</span> <span class="t-dim">→ routing to audit pipeline</span></span>
+          <span class="t-line"><span class="t-arrow">⟠</span> <span class="t-agent">auditor</span> <span class="t-dim">→ static analysis · slither scan</span></span>
+          <span class="t-line"><span class="t-dim">  HIGH-1: releasePrize — winner not validated</span></span>
+          <span class="t-line"><span class="t-dim">  HIGH-2: no ReentrancyGuard on external fns</span></span>
+          <span class="t-line"><span class="t-dim">  → 2 HIGH · 4 MED · 3 LOW · 1 INFO</span></span>
+          <span class="t-line"><span class="t-arrow">⟠</span> <span class="t-agent">security-specialist</span> <span class="t-dim">→ exploit simulation</span></span>
+          <span class="t-line"><span class="t-dim">  PoC: cross-function reentrancy via callback</span></span>
+          <span class="t-line">&nbsp;</span>
+          <span class="t-line"><span class="t-success">✓</span> <span class="t-dim">audit-report.md written</span></span>
+          <span class="t-line"><span class="t-success">✓</span> <span class="t-dim">10 findings · remediation for each</span></span>
+          <span class="t-line">&nbsp;</span>
+          <span class="t-line"><span class="t-prompt">you  ›</span> <span class="cursor"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <ol class="how-steps reveal">
+      <li class="how-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Describe in plain English</h3>
+          <p>No flags, no commands. "Audit this contract", "build a staking contract with ERC4626", "deploy to Arbitrum Sepolia" — eth-agents understands intent.</p>
+        </div>
+      </li>
+      <li class="how-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Orchestrator routes the pipeline</h3>
+          <p>A coordinator agent identifies the skill, selects the right agents in the right order, and manages handoffs automatically. You see progress in the Claude Code status bar.</p>
+        </div>
+      </li>
+      <li class="how-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Specialized agents execute</h3>
+          <p>Each agent has a specific role, defined tools, and output constraints. They produce structured artifacts — audit reports, test files, gas diffs, deployment receipts.</p>
+        </div>
+      </li>
+      <li class="how-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>You review, never blocked</h3>
+          <p>Mainnet deployments always halt for your explicit confirmation. All agents report what they did and why. You stay in control.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="agents-inner">
+    <div class="agents-intro reveal">
+      <div>
+        <div class="section-label">// 02 — The team</div>
+        <h2 class="section-title">10 Agents.<br/>One orchestrator.</h2>
+      </div>
+      <p class="section-desc">Each agent is a markdown file with a defined role, allowed tools, output constraints, and handoff rules. Model routing keeps costs low — Haiku for simple tasks, Sonnet for implementation, Opus for security.</p>
+    </div>
+
+    <div class="agents-grid reveal">
+      <!-- Orchestrator -->
+      <div class="agent-card orchestrator-card" style="grid-column: 1/-1;">
+        <div class="agent-tag"><span class="tag-dot"></span>Coordinator</div>
+        <div class="agent-name">Orchestrator</div>
+        <div class="agent-desc">Entry point for every skill invocation. Interprets intent, selects the skill pipeline, spawns the right agents in order, manages token budget, and emits MCP HUD status updates.</div>
+        <span class="agent-model">model: opus</span>
+      </div>
+
+      <!-- Dev -->
+      <div class="agent-card dev">
+        <div class="agent-tag"><span class="tag-dot"></span>Development</div>
+        <div class="agent-name">Contract Developer</div>
+        <div class="agent-desc">Writes production-ready Solidity contracts. Spec → TDD loop → gas pass. Never ships without green tests.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <!-- Security -->
+      <div class="agent-card security">
+        <div class="agent-tag"><span class="tag-dot"></span>Security</div>
+        <div class="agent-name">Auditor</div>
+        <div class="agent-desc">Systematic vulnerability analysis with Slither/Mythril. Configurable depth: static, dynamic (Echidna), or formal (Certora/Halmos).</div>
+        <span class="agent-model">model: opus</span>
+      </div>
+
+      <div class="agent-card security">
+        <div class="agent-tag"><span class="tag-dot"></span>Security</div>
+        <div class="agent-name">Security Specialist</div>
+        <div class="agent-desc">Activated on Critical/High findings. Writes PoC exploit tests, simulates attack vectors, confirms impact before marking a finding.</div>
+        <span class="agent-model">model: opus</span>
+      </div>
+
+      <!-- Testing -->
+      <div class="agent-card testing">
+        <div class="agent-tag"><span class="tag-dot"></span>Testing</div>
+        <div class="agent-name">Unit Test Engineer</div>
+        <div class="agent-desc">Writes isolated unit tests before implementation exists. Mocks all external deps. Runs regression after implementation.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <div class="agent-card testing">
+        <div class="agent-tag"><span class="tag-dot"></span>Testing</div>
+        <div class="agent-name">Integration Test Engineer</div>
+        <div class="agent-desc">Fork tests, fuzz tests, and invariant tests against real mainnet state. Always pins block number — never uses `latest`.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <div class="agent-card testing">
+        <div class="agent-tag"><span class="tag-dot"></span>Testing</div>
+        <div class="agent-name">Debugger</div>
+        <div class="agent-desc">Diagnoses failing transactions with `cast run`, `forge trace`, `forge debug`. Documents root cause before suggesting any fix.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <!-- Ops -->
+      <div class="agent-card ops">
+        <div class="agent-tag"><span class="tag-dot"></span>Operational</div>
+        <div class="agent-name">Gas Optimizer</div>
+        <div class="agent-desc">Reduces gas without changing behavior. One category at a time. Must produce a positive diff before handing off.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <div class="agent-card ops">
+        <div class="agent-tag"><span class="tag-dot"></span>Operational</div>
+        <div class="agent-name">Deploy Engineer</div>
+        <div class="agent-desc">Multichain deployment scripts, dry-runs, Etherscan verification. Never deploys to mainnet without your explicit confirmation.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+
+      <div class="agent-card ops">
+        <div class="agent-tag"><span class="tag-dot"></span>Operational</div>
+        <div class="agent-name">dApp Developer</div>
+        <div class="agent-desc">Auto-detects your stack (wagmi/viem, ethers.js, Next.js/React/Vue). Reads ABIs from deployment artifacts — never copy-paste.</div>
+        <span class="agent-model">model: sonnet</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="reveal">
+    <div class="section-label">// 03 — Skills</div>
+    <h2 class="section-title">9 Pipelines.<br/>One command each.</h2>
+    <p class="section-desc">Skills are entry points. They activate coordinated agent pipelines. You trigger them by describing intent — no syntax to memorize.</p>
+  </div>
+
+  <div class="skills-layout reveal">
+    <div class="skill-list" id="skill-list">
+      <!-- populated by JS -->
+    </div>
+    <div class="skill-detail" id="skill-detail">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- AUDIT DEMO -->
+<section id="demo">
+  <div class="demo-inner">
+    <div class="reveal">
+      <div class="section-label">// 04 — Real output</div>
+      <h2 class="section-title">What an audit<br/>looks like.</h2>
+      <p class="section-desc">eth-agents generates structured, actionable audit reports. Every finding includes severity, impact, location, and a concrete remediation with code.</p>
+    </div>
+
+    <div class="demo-layout reveal">
+      <!-- Audit report card -->
+      <div class="audit-card">
+        <div class="audit-card-header">
+          <span class="audit-card-title">audit-report.md</span>
+          <span class="audit-badge badge-done">completed</span>
+        </div>
+
+        <div class="severity-summary">
+          <div class="sev-item sev-critical">
+            <span class="sev-num">0</span>
+            <span class="sev-label">Critical</span>
+          </div>
+          <div class="sev-item sev-high">
+            <span class="sev-num">2</span>
+            <span class="sev-label">High</span>
+          </div>
+          <div class="sev-item sev-med">
+            <span class="sev-num">4</span>
+            <span class="sev-label">Medium</span>
+          </div>
+          <div class="sev-item sev-low">
+            <span class="sev-num">3</span>
+            <span class="sev-label">Low</span>
+          </div>
+          <div class="sev-item sev-info">
+            <span class="sev-num">1</span>
+            <span class="sev-label">Info</span>
+          </div>
+        </div>
+
+        <div class="finding-list">
+          <div class="finding-item">
+            <span class="finding-severity sev-HIGH">HIGH</span>
+            <div class="finding-text">
+              <h4>Winner address not validated in prize release</h4>
+              <p>Privileged function can redirect funds to any arbitrary address. Direct fund loss vector.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-HIGH">HIGH</span>
+            <div class="finding-text">
+              <h4>No reentrancy guard on external functions</h4>
+              <p>Cross-function reentrancy possible via callback-capable token. Risk of double refund.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-MED">MED</span>
+            <div class="finding-text">
+              <h4>Missing SafeERC20 — silent failure risk</h4>
+              <p>Raw transfer calls will revert with non-standard ERC-20 tokens, bricking deposit/refund flows.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-MED">MED</span>
+            <div class="finding-text">
+              <h4>Single immutable owner — no transfer mechanism</h4>
+              <p>Lost key locks all rooms. Compromised key gives full prize control. No Ownable2Step.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-MED">MED</span>
+            <div class="finding-text">
+              <h4>Asymmetric stake amounts — unfair betting risk</h4>
+              <p>No enforcement that both players stake the same amount. Griefing via front-running possible.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-LOW">LOW</span>
+            <div class="finding-text">
+              <h4>block.timestamp used for 45s stake window</h4>
+              <p>Validator manipulation (~12–15s) represents ~33% of the window. Increase timeout to mitigate.</p>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-severity sev-INFO">INFO</span>
+            <div class="finding-text">
+              <h4>Missing OwnershipTransferred event in constructor</h4>
+              <p>Standard off-chain indexing tools won't detect initial owner assignment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta panel -->
+      <div class="demo-meta">
+        <div class="meta-card">
+          <div class="meta-card-label">// Auditor</div>
+          <p>Audit performed by <code>eth-agents:auditor</code> running on <code>Claude Opus</code>. Static analysis pass with manual pattern analysis + Slither scan.</p>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-card-label">// Token efficiency</div>
+          <p>Audit pipeline used ~14k tokens total. Prompt caching reduced cost by ~67% — static agent role definitions are cached after first invocation.</p>
+          <div class="token-bar">
+            <div class="token-fill" style="width: 67%"></div>
+          </div>
+          <div class="token-info">
+            <span>14k tokens used</span>
+            <span class="cached">67% cached</span>
+          </div>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-card-label">// Output</div>
+          <p>Every finding includes: severity classification, exact file location, description, impact statement, and a concrete remediation with code snippet. No vague suggestions.</p>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-card-label">// MCP HUD status</div>
+          <div class="terminal" style="font-size: 0.68rem;">
+            <div class="terminal-body" style="padding: 12px 16px;">
+              <span class="t-line"><span class="t-arrow">⟠</span> <span class="t-dim">[audit] auditor ▶ Phase 2/5 · 14k tokens · 67% cached</span></span>
+              <span class="t-line"><span class="t-arrow">⟠</span> <span class="t-dim">[audit] security-specialist ▶ Phase 3/5 · exploit sim</span></span>
+              <span class="t-line"><span class="t-success">⟠</span> <span class="t-dim">idle — audit-report.md written</span></span>
+            </div>
+          </div>
+        </div>
+
+        <a href="https://github.com/cayocan/eth-agents" class="btn-primary" style="text-align:center;display:block;" target="_blank">
+          See the source on GitHub ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOKEN OPTIMIZATION -->
+<section id="tokens">
+  <div class="reveal">
+    <div class="section-label">// 05 — Token optimization</div>
+    <h2 class="section-title">~55% token savings.<br/>By design.</h2>
+    <p class="section-desc">eth-agents is engineered to minimize token usage without sacrificing quality. Three complementary mechanisms work in layers.</p>
+  </div>
+
+  <div class="tokens-layout reveal">
+    <div class="savings-display">
+      <div class="savings-ring">
+        <svg viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="86"/>
+          <circle class="ring-eth" cx="100" cy="100" r="86"/>
+          <circle class="ring-cyan" cx="100" cy="100" r="86"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-num">~55%</span>
+          <span class="ring-label">total savings</span>
+        </div>
+      </div>
+      <div class="savings-legend">
+        <div class="legend-item">
+          <span class="legend-dot" style="background:var(--eth)"></span>
+          <div class="legend-text"><strong>~35%</strong> model routing</div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background:var(--cyan)"></span>
+          <div class="legend-text"><strong>~15%</strong> prompt caching</div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background:#555"></span>
+          <div class="legend-text"><strong>~12%</strong> output constraints</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <table class="tokens-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Mechanism</th>
+            <th>Savings</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="layer-name">Model routing</td>
+            <td class="saving-desc">Haiku for simple tasks, Sonnet for implementation, Opus only for security and full-protocol pipelines</td>
+            <td class="saving-pct">~35%</td>
+          </tr>
+          <tr>
+            <td class="layer-name">Prompt caching</td>
+            <td class="saving-desc">Static agent role definitions are cached after first invocation (each agent file exceeds Anthropic's 1024-token auto-cache threshold)</td>
+            <td class="saving-pct">~15%</td>
+          </tr>
+          <tr>
+            <td class="layer-name">Output constraints</td>
+            <td class="saving-desc">Per-agent token limits, artifacts always before prose, structured outputs reduce verbose explanations</td>
+            <td class="saving-pct">~12%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section id="install">
+  <div class="install-inner reveal">
+    <div class="section-label">// 06 — Get started</div>
+    <h2 class="install-title">One command.<br/><span>Zero config.</span></h2>
+    <p class="install-sub">Install the plugin, navigate to any Ethereum project, and start describing what you want. eth-agents auto-detects Foundry or Hardhat, your frontend framework, and your Web3 library.</p>
+
+    <div class="install-steps">
+      <div class="install-step">
+        <div class="install-step-num">1</div>
+        <div>
+          <div class="install-step-code"><span class="cmd">claude plugin install eth-agents@eth-agents</span></div>
+          <div class="install-step-sub">Install the plugin via Claude Code</div>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">2</div>
+        <div>
+          <div class="install-step-code"><span class="cmd">cd</span> your-eth-project</div>
+          <div class="install-step-sub">Navigate to any Foundry or Hardhat project</div>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">3</div>
+        <div>
+          <div class="install-step-code"><span style="color:var(--amber)">›</span> <span class="cmd">"audit this contract"</span></div>
+          <div class="install-step-sub">Describe what you want in plain English — that's it</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/cayocan/eth-agents" class="btn-primary" target="_blank">View on GitHub</a>
+      <a href="https://github.com/cayocan/eth-agents#readme" class="btn-ghost" target="_blank">Read the docs</a>
+    </div>
+
+    <div class="install-req">
+      Requires <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code</a> · Node.js 18+ · MIT License
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">⟠ <span>eth</span>-agents</div>
+  <ul class="footer-links">
+    <li><a href="https://github.com/cayocan/eth-agents" target="_blank">GitHub</a></li>
+    <li><a href="https://github.com/cayocan/eth-agents/issues" target="_blank">Issues</a></li>
+    <li><a href="https://github.com/cayocan/eth-agents/blob/main/LICENSE" target="_blank">MIT License</a></li>
+  </ul>
+  <div class="footer-copy">built by cayocan · open source</div>
+</footer>
+
+<script>
+// ── SKILLS DATA ──
+const skills = [
+  {
+    name: 'audit',
+    title: 'Security Audit',
+    tag: 'Security',
+    desc: 'Systematic vulnerability analysis. Configurable depth from fast static analysis to full formal verification with Certora.',
+    triggers: ['"audit this contract"', '"check for vulnerabilities"', '"security review"', '"is this safe"'],
+    pipeline: [
+      { agent: 'orchestrator', arrow: '→', text: 'routes to audit pipeline' },
+      { agent: 'auditor', arrow: '→', text: 'static / dynamic / formal' },
+      { agent: 'security-specialist', arrow: '→', text: 'if Critical/High found', cond: true },
+      { agent: '', arrow: '→', text: 'audit-report.md written' },
+    ]
+  },
+  {
+    name: 'tdd',
+    title: 'Test-Driven Dev',
+    tag: 'Testing',
+    desc: 'Strict TDD loop: tests written before implementation, implementation must make them pass. Max 5 iterations.',
+    triggers: ['"write tests first"', '"tdd"', '"write failing tests"', '"test-driven"'],
+    pipeline: [
+      { agent: 'unit-test-engineer', arrow: '↕', text: 'writes failing tests' },
+      { agent: 'contract-developer', arrow: '↕', text: 'implements to pass · loop ×5' },
+      { agent: 'unit-test-engineer', arrow: '→', text: 'coverage report' },
+    ]
+  },
+  {
+    name: 'build-contract',
+    title: 'Full Build Pipeline',
+    tag: 'Development',
+    desc: 'Spec → TDD → static audit → gas optimization. Produces a production-ready contract end-to-end.',
+    triggers: ['"build a contract"', '"create a staking contract"', '"implement ERC-20"'],
+    pipeline: [
+      { agent: 'contract-developer', arrow: '→', text: 'TDD loop' },
+      { agent: 'auditor', arrow: '→', text: 'static audit' },
+      { agent: 'gas-optimizer', arrow: '→', text: 'baseline + optimizations' },
+    ]
+  },
+  {
+    name: 'deploy',
+    title: 'Multichain Deploy',
+    tag: 'Operational',
+    desc: 'Deployment script → dry-run → your confirmation → deploy → Etherscan verification. Always halts on mainnet.',
+    triggers: ['"deploy to Arbitrum"', '"ship to Base mainnet"', '"deploy and verify"'],
+    pipeline: [
+      { agent: 'deploy-engineer', arrow: '→', text: 'generates script + dry-run' },
+      { agent: '⚠ YOU', arrow: '→', text: 'must confirm for mainnet', cond: true },
+      { agent: 'deploy-engineer', arrow: '→', text: 'deploys + Etherscan verify' },
+    ]
+  },
+  {
+    name: 'gas-optimize',
+    title: 'Gas Optimization',
+    tag: 'Operational',
+    desc: 'Targeted gas reduction without changing behavior. One category at a time, must produce a positive diff.',
+    triggers: ['"optimize gas"', '"reduce deployment costs"', '"cheaper transactions"'],
+    pipeline: [
+      { agent: 'gas-optimizer', arrow: '→', text: 'before/after snapshot' },
+      { agent: 'gas-optimizer', arrow: '→', text: 'applies optimizations · 1 category' },
+      { agent: 'gas-optimizer', arrow: '→', text: 'confirms positive diff' },
+    ]
+  },
+  {
+    name: 'fork-test',
+    title: 'Fork Testing',
+    tag: 'Testing',
+    desc: 'Integration tests, fuzz campaigns, and invariant tests against real mainnet state. Always pins block number.',
+    triggers: ['"run fork tests"', '"test against Uniswap V3"', '"fuzz this invariant"'],
+    pipeline: [
+      { agent: 'integration-test-engineer', arrow: '→', text: 'writes fork / fuzz / invariant tests' },
+      { agent: 'integration-test-engineer', arrow: '→', text: 'runs Echidna campaigns' },
+    ]
+  },
+  {
+    name: 'full-protocol',
+    title: 'Full Protocol',
+    tag: 'Development',
+    desc: 'End-to-end DeFi protocol build: all contracts, fork tests, full audit, gas pass, deployment, frontend integration.',
+    triggers: ['"build the full DeFi protocol"', '"end-to-end"', '"full protocol"'],
+    pipeline: [
+      { agent: 'contract-developer', arrow: '→', text: 'all contracts + TDD' },
+      { agent: 'auditor + security-specialist', arrow: '→', text: 'full audit' },
+      { agent: 'gas-optimizer + deploy-engineer', arrow: '→', text: 'gas + deployment' },
+      { agent: 'dapp-developer', arrow: '→', text: 'frontend integration' },
+    ]
+  },
+  {
+    name: 'learn',
+    title: 'Learn',
+    tag: 'Education',
+    desc: 'Explain Ethereum concepts, patterns, and security in depth. From ERC standards to MEV, from storage layout to formal verification.',
+    triggers: ['"explain reentrancy"', '"how does ERC4626 work"', '"what is MEV"'],
+    pipeline: [
+      { agent: 'orchestrator', arrow: '→', text: 'identifies concept + depth' },
+      { agent: 'auditor / contract-developer', arrow: '→', text: 'explains with examples' },
+    ]
+  },
+  {
+    name: 'help',
+    title: 'Help',
+    tag: 'Meta',
+    desc: 'Lists all available skills and agents with usage examples. Your starting point if you\'re not sure which skill to use.',
+    triggers: ['"help"', '"what can you do"', '"list skills"'],
+    pipeline: [
+      { agent: 'orchestrator', arrow: '→', text: 'prints skill directory' },
+    ]
+  },
+];
+
+function renderPipeline(pipeline) {
+  return pipeline.map(p => {
+    const agentClass = p.cond ? 'pl-cond' : 'pl-agent';
+    return `<span class="${agentClass}">${p.agent}</span> <span class="pl-arrow">${p.arrow}</span> ${p.text}`;
+  }).join('<br/>');
+}
+
+function renderSkillDetail(skill) {
+  return `
+    <div class="skill-detail-name">// ${skill.name}</div>
+    <div class="skill-detail-title">${skill.title}</div>
+    <div class="skill-detail-desc">${skill.desc}</div>
+    <div class="pipeline-box">${renderPipeline(skill.pipeline)}</div>
+    <div class="trigger-tags">${skill.triggers.map(t => `<span class="trigger-tag">${t}</span>`).join('')}</div>
+  `;
+}
+
+function initSkills() {
+  const list = document.getElementById('skill-list');
+  const detail = document.getElementById('skill-detail');
+
+  skills.forEach((skill, i) => {
+    const item = document.createElement('div');
+    item.className = 'skill-item' + (i === 0 ? ' active' : '');
+    item.innerHTML = `
+      <div class="skill-item-header">
+        <span class="skill-name">${skill.name}</span>
+        <span class="skill-tag">${skill.tag}</span>
+      </div>
+      <div class="skill-desc">${skill.desc.substring(0, 80)}...</div>
+    `;
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.skill-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+      detail.innerHTML = renderSkillDetail(skill);
+    });
+    list.appendChild(item);
+  });
+
+  detail.innerHTML = renderSkillDetail(skills[0]);
+}
+
+// ── SCROLL REVEAL ──
+function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSkills();
+  initReveal();
+});
+</script>
+</body>
+</html>
