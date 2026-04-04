@@ -5,6 +5,11 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/cayocan/eth-agents"><img src="https://img.shields.io/github/stars/cayocan/eth-agents?style=flat-square" alt="GitHub stars"/></a>
+  <a href="https://github.com/cayocan/eth-agents/network/members"><img src="https://img.shields.io/github/forks/cayocan/eth-agents?style=flat-square" alt="GitHub forks"/></a>
+  <a href="https://github.com/cayocan/eth-agents/issues"><img src="https://img.shields.io/github/issues/cayocan/eth-agents?style=flat-square" alt="GitHub issues"/></a>
+  <a href="https://github.com/cayocan/eth-agents/releases"><img src="https://img.shields.io/github/v/release/cayocan/eth-agents?style=flat-square" alt="Latest release"/></a>
+  <a href="https://github.com/cayocan/eth-agents"><img src="https://img.shields.io/github/downloads/cayocan/eth-agents/total?style=flat-square" alt="Downloads"/></a>
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-blue?style=flat-square" alt="Claude Code Plugin"/>
   <img src="https://img.shields.io/badge/Solidity-0.8.x-363636?style=flat-square&logo=solidity" alt="Solidity"/>
   <img src="https://img.shields.io/badge/Foundry-compatible-red?style=flat-square" alt="Foundry"/>
